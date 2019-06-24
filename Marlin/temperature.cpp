@@ -453,30 +453,46 @@ void checkExtruderAutoFans() {
 //
 // Temperature Error Handlers
 //
-inline void _temp_error(int e, const char* serial_msg, const char* lcd_msg) {
+inline void _temp_error(int e, const char* serial_msg, const char* lcd_msg) 
+{
   static bool killed = false;
-  if (IsRunning()) {
+  if (IsRunning()) 
+  {
     SERIAL_ERROR_START;
     serialprintPGM(serial_msg);
     SERIAL_ERRORPGM(MSG_STOPPED_HEATER);
     if (e >= 0) SERIAL_ERRORLN((int)e); else SERIAL_ERRORLNPGM(MSG_HEATER_BED);
   }
   #if DISABLED(BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE)
-    if (!killed) {
-      Running = false;
-      killed = true;
-      kill(lcd_msg);
+    if (!killed) 
+	{	
+      // translation: Generates an error temperature and turns off the firmware
+      // Running = false;
+      // killed = true;
+      // translation: Close the display
+      // kill(lcd_msg);
     }
     else
-      disable_all_heaters(); // paranoia
+      disable_all_heaters(); // paranoia translation: All heating is forbidden
   #endif
+    float ct = current_temperature[0];
+    if (ct > min(HEATER_0_MAXTEMP, 1023)) LCD_MESSAGEPGM("Err: MAXTEMP");
+    if (ct < max(HEATER_0_MINTEMP, 0.01)) LCD_MESSAGEPGM("Err: MINTEMP");
+
+    float ct1 = current_temperature_bed;
+    if (ct1 > min(BED_MAXTEMP, 1023)) LCD_MESSAGEPGM("Err: MAXTEMP");
+    if (ct1 < max(BED_MINTEMP, 0.01)) LCD_MESSAGEPGM("Err: MINTEMP");
 }
 
-void max_temp_error(uint8_t e) {
+void max_temp_error(uint8_t e) 
+{
   _temp_error(e, PSTR(MSG_T_MAXTEMP), PSTR(MSG_ERR_MAXTEMP));
+  LCD_MESSAGEPGM("Err: MAXTEMP");
 }
-void min_temp_error(uint8_t e) {
+void min_temp_error(uint8_t e) 
+{
   _temp_error(e, PSTR(MSG_T_MINTEMP), PSTR(MSG_ERR_MINTEMP));
+  LCD_MESSAGEPGM("Err: MINTEMP");
 }
 
 float get_pid_output(int e) {
@@ -972,6 +988,7 @@ void tp_init() {
   // Wait for temperature measurement to settle
   delay(250);
 
+/*
   #define TEMP_MIN_ROUTINE(NR) \
     minttemp[NR] = HEATER_ ## NR ## _MINTEMP; \
     while(analog2temp(minttemp_raw[NR], NR) < HEATER_ ## NR ## _MINTEMP) { \
@@ -988,12 +1005,13 @@ void tp_init() {
       else \
         maxttemp_raw[NR] += OVERSAMPLENR; \
     }
+*/
 
   #ifdef HEATER_0_MINTEMP
-    TEMP_MIN_ROUTINE(0);
+    // TEMP_MIN_ROUTINE(0);
   #endif
   #ifdef HEATER_0_MAXTEMP
-    TEMP_MAX_ROUTINE(0);
+    // TEMP_MAX_ROUTINE(0);
   #endif
   #if EXTRUDERS > 1
     #ifdef HEATER_1_MINTEMP
@@ -1019,6 +1037,29 @@ void tp_init() {
       #endif // EXTRUDERS > 3
     #endif // EXTRUDERS > 2
   #endif // EXTRUDERS > 1
+
+#ifdef HEATER_0_MINTEMP
+  minttemp[0] = HEATER_0_MINTEMP;
+  while(analog2temp(minttemp_raw[0], 0) < HEATER_0_MINTEMP) 
+  {
+#if HEATER_0_RAW_LO_TEMP < HEATER_0_RAW_HI_TEMP
+    minttemp_raw[0] += OVERSAMPLENR;
+#else
+    minttemp_raw[0] -= OVERSAMPLENR;
+#endif
+  }
+#endif //MINTEMP
+#ifdef HEATER_0_MAXTEMP
+  maxttemp[0] = HEATER_0_MAXTEMP;
+  while(analog2temp(maxttemp_raw[0], 0) > HEATER_0_MAXTEMP) 
+  {
+#if HEATER_0_RAW_LO_TEMP < HEATER_0_RAW_HI_TEMP
+    maxttemp_raw[0] -= OVERSAMPLENR;
+#else
+    maxttemp_raw[0] += OVERSAMPLENR;
+#endif
+  }
+#endif //MAXTEMP
 
   #ifdef BED_MINTEMP
     while(analog2tempBed(bed_minttemp_raw) < BED_MINTEMP) {

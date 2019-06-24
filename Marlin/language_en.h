@@ -13,13 +13,13 @@
 #endif
 
 //#define SIMULATE_ROMFONT //Comment in to see what is seen on the character based displays
-#if DISABLED(SIMULATE_ROMFONT) && DISABLED(DISPLAY_CHARSET_ISO10646_1) && DISABLED(DISPLAY_CHARSET_ISO10646_5) && DISABLED(DISPLAY_CHARSET_ISO10646_KANA) && DISABLED(DISPLAY_CHARSET_ISO10646_CN)
+//#if DISABLED(SIMULATE_ROMFONT) && DISABLED(DISPLAY_CHARSET_ISO10646_1) && DISABLED(DISPLAY_CHARSET_ISO10646_5) && DISABLED(DISPLAY_CHARSET_ISO10646_KANA) && DISABLED(DISPLAY_CHARSET_ISO10646_CN)
   #define DISPLAY_CHARSET_ISO10646_1 // use the better font on full graphic displays.
-#endif
+//#endif
 
 
 #ifndef WELCOME_MSG
-  #define WELCOME_MSG                         MACHINE_NAME " ready."
+  #define WELCOME_MSG                         MACHINE_NAME 
 #endif
 #ifndef MSG_SD_INSERTED
   #define MSG_SD_INSERTED                     "Card inserted"
@@ -306,6 +306,18 @@
 #ifndef MSG_RESTORE_FAILSAFE
   #define MSG_RESTORE_FAILSAFE                "Restore failsafe"
 #endif
+#ifndef MSG_SELECT_LANGUAGE
+  #define MSG_SELECT_LANGUAGE                "Language"
+#endif
+#ifndef MSG_ENGLISH_LANGUAGE
+  #define MSG_ENGLISH_LANGUAGE               "English"
+#endif
+#ifndef MSG_CHINESE_LANGUAGE
+  #define MSG_CHINESE_LANGUAGE                "Chinese"
+#endif
+#ifndef MSG_JAPANESE_LANGUAGE
+  #define MSG_JAPANESE_LANGUAGE               "Japanese"
+#endif
 #ifndef MSG_REFRESH
   #define MSG_REFRESH                         "Refresh"
 #endif
@@ -380,6 +392,8 @@
 #endif
 #ifndef MSG_FILAMENTCHANGE
   #define MSG_FILAMENTCHANGE                  "Change filament"
+  #define MSG_LOAD							"Load"
+  #define MSG_UNLOAD							"UnLoad"
 #endif
 #ifndef MSG_INIT_SDCARD
   #define MSG_INIT_SDCARD                     "Init. SD card"
@@ -392,6 +406,22 @@
 #endif
 #ifndef MSG_POSITION_UNKNOWN
   #define MSG_POSITION_UNKNOWN                "Home X/Y before Z"
+#endif
+
+#ifndef  MSG_LED
+  #define  MSG_LED                             "LED Control"
+#endif
+#ifndef  MSG_TIAOPING
+  #define  MSG_TIAOPING                        "Bed Auto Leveling"
+#endif
+#ifndef  MSG_LED_ON 
+  #define  MSG_LED_ON                         "ON"
+#endif
+#ifndef  MSG_LED_OFF 
+  #define  MSG_LED_OFF                         "OFF"
+#endif
+#ifndef  MSG_NEXT 
+  #define  MSG_NEXT                           "Next Step"
 #endif
 #ifndef MSG_ZPROBE_ZOFFSET
   #define MSG_ZPROBE_ZOFFSET                  "Z Offset"
@@ -461,6 +491,15 @@
 #endif
 #ifndef MSG_DELTA_CALIBRATE_CENTER
   #define MSG_DELTA_CALIBRATE_CENTER          "Calibrate Center"
+#endif
+#ifndef MSG_RESUME_PRINT_OK
+  #define MSG_RESUME_PRINT_OK                 MSG_RESUME_PRINT "?"
+#endif
+#ifndef MSG_RESUME_PRINT_Y
+  #define MSG_RESUME_PRINT_Y                  "Yes"
+#endif
+#ifndef MSG_RESUME_PRINT_N
+  #define MSG_RESUME_PRINT_N                  "No"
 #endif
 
 #endif // LANGUAGE_EN_H

@@ -353,4 +353,8 @@ extern uint8_t active_extruder;
 
 extern void calculate_volumetric_multipliers();
 
+#if ENABLED(SDSUPPORT) && ENABLED(POWEROFF_SAVE_SD_FILE)
+void init_power_off_info();
+#endif
+
 #endif //MARLIN_H

@@ -29,10 +29,11 @@
 #define LARGE_FLASH true
 
 #ifdef IS_RAMPS_14
-  #define SERVO0_PIN       11
+  #define SERVO0_PIN       -1	// 11
 #else
   #define SERVO0_PIN        7 // RAMPS_13 // Will conflict with BTN_EN2 on LCD_I2C_VIKI
 #endif
+#define CHECK_MATWEIAL		2
 #define SERVO1_PIN          6
 #define SERVO2_PIN          5
 #define SERVO3_PIN          4
@@ -40,20 +41,25 @@
 #define X_STEP_PIN         54
 #define X_DIR_PIN          55
 #define X_ENABLE_PIN       38
-#define X_MIN_PIN           3
-#define X_MAX_PIN           2
+#define X_MIN_PIN          3
+#define X_MAX_PIN          -1	// 2
 
 #define Y_STEP_PIN         60
 #define Y_DIR_PIN          61
 #define Y_ENABLE_PIN       56
 #define Y_MIN_PIN          14
-#define Y_MAX_PIN          15
+#define Y_MAX_PIN          -1	// 15
+
+#define IN_PUT				19	// 15
+#define OUT_PUT				12	// 19
+
+#define LED           		11	// 65
 
 #define Z_STEP_PIN         46
 #define Z_DIR_PIN          48
 #define Z_ENABLE_PIN       62
 #define Z_MIN_PIN          18
-#define Z_MAX_PIN          19
+#define Z_MAX_PIN          -1	//19
 
 #define E0_STEP_PIN        26
 #define E0_DIR_PIN         28
@@ -109,7 +115,7 @@
 #endif
 
 #if MB(RAMPS_13_SF) || ENABLED(IS_RAMPS_EFB)
-  #define HEATER_1_PIN     -1
+  #define HEATER_1_PIN	    7	// -1
 #else
   #define HEATER_1_PIN      9   // EXTRUDER 2 (FAN On Sprinter)
 #endif
@@ -117,7 +123,7 @@
 #define HEATER_2_PIN       -1
 
 #define TEMP_0_PIN         13   // ANALOG NUMBERING
-#define TEMP_1_PIN         15   // ANALOG NUMBERING
+#define TEMP_1_PIN         15   // 14 ANALOG NUMBERING
 #define TEMP_2_PIN         -1   // ANALOG NUMBERING
 
 #if MB(RAMPS_13_EFF) || MB(RAMPS_13_EEF) || MB(RAMPS_13_SF)
@@ -158,7 +164,7 @@
       #define BTN_EN2 33
       #define BTN_ENC 35
 
-      #define SD_DETECT_PIN 49
+      #define SD_DETECT_PIN -1	// 49
     #elif ENABLED(LCD_I2C_PANELOLU2)
       #define BTN_EN1 47  // reverse if the encoder turns the wrong way.
       #define BTN_EN2 43
@@ -173,12 +179,12 @@
                           // 22/7 are unused on RAMPS_14. 22 is unused and 7 the SERVO0_PIN on RAMPS_13.
       #define BTN_ENC -1
       #define LCD_SDSS 53
-      #define SD_DETECT_PIN 49
+      #define SD_DETECT_PIN -1	// 49
     #elif ENABLED(ELB_FULL_GRAPHIC_CONTROLLER)
       #define BTN_EN1 35  // reverse if the encoder turns the wrong way.
       #define BTN_EN2 37
       #define BTN_ENC 31
-      #define SD_DETECT_PIN 49
+      #define SD_DETECT_PIN -1	// 49
       #define LCD_SDSS 53
       #define KILL_PIN 41
       #define BEEPER_PIN 23
@@ -186,11 +192,11 @@
       #define DOGLCD_A0 27
       #define LCD_PIN_BL 33
     #elif ENABLED(MINIPANEL)
-      #define BEEPER_PIN 42
+      #define BEEPER_PIN 37
       // Pins for DOGM SPI LCD Support
-      #define DOGLCD_A0  44
-      #define DOGLCD_CS  66
-      #define LCD_PIN_BL 65 // backlight LED on A11/D65
+      #define DOGLCD_A0  27
+      #define DOGLCD_CS  25
+      #define LCD_PIN_BL -1 // backlight LED on A11/D65
       #define SDSS   53
 
       #define KILL_PIN 64
@@ -201,11 +207,11 @@
       //#define LCD_SCREEN_ROT_180
       //#define LCD_SCREEN_ROT_270
       //The encoder and click button
-      #define BTN_EN1 40
-      #define BTN_EN2 63
-      #define BTN_ENC 59  //the click switch
+      #define BTN_EN1 31
+      #define BTN_EN2 33
+      #define BTN_ENC 35  //the click switch
       //not connected to a pin
-      #define SD_DETECT_PIN 49
+      #define SD_DETECT_PIN -1	// 49
 
     #else
 
@@ -230,7 +236,7 @@
       #endif
 
       #if ENABLED(G3D_PANEL)
-        #define SD_DETECT_PIN 49
+        #define SD_DETECT_PIN -1	// 49
       #else
         #define SD_DETECT_PIN -1  // Ramps doesn't use this
       #endif

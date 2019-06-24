@@ -51,7 +51,7 @@
 #define FONT_SPECIAL_NAME Marlin_symbols
 
 #if DISABLED(SIMULATE_ROMFONT)
-  #if ENABLED(DISPLAY_CHARSET_ISO10646_1)
+  /*#if ENABLED(DISPLAY_CHARSET_ISO10646_1)
     #include "dogm_font_data_ISO10646_1.h"
     #define FONT_MENU_NAME ISO10646_1_5x7
   #elif ENABLED(DISPLAY_CHARSET_ISO10646_5)
@@ -67,6 +67,19 @@
   #else // fall-back
     #include "dogm_font_data_ISO10646_1.h"
     #define FONT_MENU_NAME ISO10646_1_5x7
+  #endif*/
+  #if ENABLED(DISPLAY_CHARSET_ISO10646_KANA)
+    #include "dogm_font_data_ISO10646_Kana.h"
+    #define FONT_MENU_NAME_KANA ISO10646_Kana_5x7
+  #endif
+  #if ENABLED(DISPLAY_CHARSET_ISO10646_CN)
+    #include "dogm_font_data_ISO10646_CN.h"
+    #define FONT_MENU_NAME_CN ISO10646_CN
+    //#define TALL_FONT_CORRECTION 1
+  #endif
+  #if ENABLED(DISPLAY_CHARSET_ISO10646_1)
+    #include "dogm_font_data_ISO10646_1.h"
+    #define FONT_MENU_NAME_EN ISO10646_1_5x7
   #endif
 #else // SIMULATE_ROMFONT
   #if ENABLED(DISPLAY_CHARSET_HD44780_JAPAN)
@@ -106,9 +119,9 @@
   #define LCD_WIDTH_EDIT       22
 #endif
 
-#ifndef TALL_FONT_CORRECTION
-  #define TALL_FONT_CORRECTION 0
-#endif
+//#ifndef TALL_FONT_CORRECTION
+//  #define TALL_FONT_CORRECTION 0
+//#endif
 
 #define START_ROW              0
 
@@ -144,6 +157,7 @@
 #endif
 
 #include "utf_mapper.h"
+#include "multi_language.h"
 
 int lcd_contrast;
 static unsigned char blink = 0; // Variable for visualization of fan rotation in GLCD
@@ -151,10 +165,10 @@ static char currentfont = 0;
 
 static void lcd_setFont(char font_nr) {
   switch(font_nr) {
-    case FONT_STATUSMENU : {u8g.setFont(FONT_STATUSMENU_NAME); currentfont = FONT_STATUSMENU;}; break;
-    case FONT_MENU       : {u8g.setFont(FONT_MENU_NAME); currentfont = FONT_MENU;}; break;
+    case FONT_STATUSMENU : {set_fontname(font_nr); currentfont = FONT_STATUSMENU;}; break;
+    case FONT_MENU       : {set_fontname(font_nr);currentfont = FONT_MENU;}; break;
     case FONT_SPECIAL    : {u8g.setFont(FONT_SPECIAL_NAME); currentfont = FONT_SPECIAL;}; break;
-    case FONT_MENU_EDIT  : {u8g.setFont(FONT_MENU_EDIT_NAME); currentfont = FONT_MENU_EDIT;}; break;
+    case FONT_MENU_EDIT  : {set_fontname(font_nr);currentfont = FONT_MENU_EDIT;}; break;
     break;
   }
 }
@@ -196,6 +210,8 @@ char lcd_printPGM(const char* str) {
 
 /* Warning: This function is called from interrupt context */
 static void lcd_implementation_init() {
+
+  lcd_select_lang();
 
   #if defined(LCD_PIN_BL) && LCD_PIN_BL > -1 // Enable LCD backlight
     pinMode(LCD_PIN_BL, OUTPUT);
@@ -271,63 +287,83 @@ static void _draw_heater_status(int x, int heater) {
 
   lcd_printPGM(PSTR(LCD_STR_DEGREE " "));
   if (!isHeatingHotend(0)) {
-    u8g.drawBox(x+7,y,2,2);
+    u8g.drawBox(x+8,y,2,2);
   }
   else {
     u8g.setColorIndex(0); // white on black
-    u8g.drawBox(x + 7, y, 2, 2);
+    u8g.drawBox(x + 8, y, 2, 2);
     u8g.setColorIndex(1); // black on white
   }
 }
 
-static void lcd_implementation_status_screen() {
+static void lcd_implementation_status_screen() 
+{
   u8g.setColorIndex(1); // black on white
 
-  // Symbols menu graphics, animated fan
-  u8g.drawBitmapP(9,1,STATUS_SCREENBYTEWIDTH,STATUS_SCREENHEIGHT, (blink % 2) && fanSpeed ? status_screen0_bmp : status_screen1_bmp);
+//  Symbols menu graphics, animated fan
+//  u8g.drawBitmapP(9,1,STATUS_SCREENBYTEWIDTH,STATUS_SCREENHEIGHT, (blink % 2) && fanSpeed ? status_screen0_bmp : status_screen1_bmp);
+  u8g.drawBitmapP(0,1,STATUS_SCREENBYTEWIDTH,STATUS_SCREENHEIGHT, (blink % 2) && fanSpeed ? status_screen0_bmp : status_screen1_bmp);
 
   #if ENABLED(SDSUPPORT)
     // SD Card Symbol
-    u8g.drawBox(42, 42 - TALL_FONT_CORRECTION, 8, 7);
-    u8g.drawBox(50, 44 - TALL_FONT_CORRECTION, 2, 5);
-    u8g.drawFrame(42, 49 - TALL_FONT_CORRECTION, 10, 4);
-    u8g.drawPixel(50, 43 - TALL_FONT_CORRECTION);
+    u8g.drawBox(42, 42 - tall_font_correction, 8, 7);
+    u8g.drawBox(50, 44 - tall_font_correction, 2, 5);
+    u8g.drawFrame(42, 49 - tall_font_correction, 10, 4);
+    u8g.drawPixel(50, 43 - tall_font_correction);
 
     // Progress bar frame
-    u8g.drawFrame(54, 49, 73, 4 - TALL_FONT_CORRECTION);
+    // u8g.drawFrame(54, 49, 73, 4 - tall_font_correction);
+	u8g.drawFrame(54, 49, 53, 4 - tall_font_correction);
 
     // SD Card Progress bar and clock
     lcd_setFont(FONT_STATUSMENU);
 
-    if (IS_SD_PRINTING) {
+    if (IS_SD_PRINTING) 
+	{
       // Progress bar solid part
-      u8g.drawBox(55, 50, (unsigned int)(71.f * card.percentDone() / 100.f), 2 - TALL_FONT_CORRECTION);
+      // u8g.drawBox(55, 50, (unsigned int)(71.f * card.percentDone() / 100.f), 2 - tall_font_correction);
+	  u8g.drawBox(55, 50, (unsigned int)(53.f * card.percentDone() / 100.f), 2 - tall_font_correction);
     }
 
-    u8g.setPrintPos(80,48);
-    if (print_job_start_ms != 0) {
+    u8g.setPrintPos(65,48);
+    if (print_job_start_ms != 0) 
+	{
       uint16_t time = (millis() - print_job_start_ms) / 60000;
       lcd_print(itostr2(time/60));
       lcd_print(':');
       lcd_print(itostr2(time%60));
+
+	  // translation: What percentage
+	  uint16_t progresssum=card.percentDone();
+	  u8g.setPrintPos(104,51);
+		u8g.print(itostr3(progresssum));
+		u8g.print('%');
     }
-    else {
+    else 
+	{
       lcd_printPGM(PSTR("--:--"));
+
+      // translation: Print progress percentage
+      u8g.setPrintPos(104,51);
+      u8g.print(itostr3(0));
+      u8g.print('%');
     }
   #endif
 
   // Extruders
-  for (int i = 0; i < EXTRUDERS; i++) _draw_heater_status(6 + i * 25, i);
+  // for (int i = 0; i < EXTRUDERS; i++) _draw_heater_status(6 + i * 25, i);
+  for (int i = 0; i < EXTRUDERS; i++) _draw_heater_status(38 + i * 25, i);
 
   // Heatbed
-  if (EXTRUDERS < 4) _draw_heater_status(81, -1);
+  if (EXTRUDERS < 4) _draw_heater_status(72, -1);
 
   // Fan
   lcd_setFont(FONT_STATUSMENU);
   u8g.setPrintPos(104, 27);
   #if HAS_FAN
     int per = ((fanSpeed + 1) * 100) / 256;
-    if (per) {
+    if (per) 
+	{
       lcd_print(itostr3(per));
       lcd_print('%');
     }
@@ -395,10 +431,12 @@ static void lcd_implementation_status_screen() {
   #if DISABLED(FILAMENT_LCD_DISPLAY)
     lcd_print(lcd_status_message);
   #else
-    if (millis() < previous_lcd_status_ms + 5000) {  //Display both Status message line and Filament display on the last line
+    if (millis() < previous_lcd_status_ms + 5000) 
+	{  // Display both Status message line and Filament display on the last line
       lcd_print(lcd_status_message);
     }
-    else {
+    else 
+	{
       lcd_printPGM(PSTR("dia:"));
       lcd_print(ftostr12ns(filament_width_meas));
       lcd_printPGM(PSTR(" factor:"));
@@ -411,7 +449,7 @@ static void lcd_implementation_status_screen() {
 static void lcd_implementation_mark_as_selected(uint8_t row, bool isSelected) {
   if (isSelected) {
     u8g.setColorIndex(1);  // black on white
-    u8g.drawBox(0, row * DOG_CHAR_HEIGHT + 3 - TALL_FONT_CORRECTION, LCD_PIXEL_WIDTH, DOG_CHAR_HEIGHT);
+    u8g.drawBox(0, row * DOG_CHAR_HEIGHT + 3 - tall_font_correction, LCD_PIXEL_WIDTH, DOG_CHAR_HEIGHT);
     u8g.setColorIndex(0);  // following text must be white on black
   }
   else {

@@ -65,7 +65,7 @@
   #define MACHINE_NAME "SAV MkI"
   #define SOURCE_CODE_URL "https://github.com/fmalpartida/Marlin/tree/SAV-MkI-config"
 #elif !defined(MACHINE_NAME)
-  #define MACHINE_NAME "3D Printer"
+  #define MACHINE_NAME "www.cxsw3d.com"
 #endif
 
 #ifdef CUSTOM_MACHINE_NAME
@@ -225,7 +225,13 @@
   #define DISPLAY_CHARSET_HD44780_JAPAN
 #endif
 
+#ifdef LANGUAGE_INCLUDE_CN
+  #include LANGUAGE_INCLUDE_CN
+#endif
+#ifdef LANGUAGE_INCLUDE_KANA
+  #include LANGUAGE_INCLUDE_KANA
+#endif
 #include LANGUAGE_INCLUDE
-#include "language_en.h"
+//#include "language_en.h"
 
 #endif //__LANGUAGE_H

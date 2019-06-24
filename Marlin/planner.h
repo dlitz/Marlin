@@ -86,6 +86,8 @@ FORCE_INLINE uint8_t movesplanned() { return BLOCK_MOD(block_buffer_head - block
 
     // Transform required to compensate for bed level
     extern matrix_3x3 plan_bed_level_matrix;
+    extern matrix_3x3 backup_plan_bed_level_matrix;
+    extern uint8_t need_restore;
 
     /**
      * Get the position applying the bed level matrix
